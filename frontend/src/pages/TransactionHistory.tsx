@@ -1,3 +1,4 @@
+
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Search, Filter, Calendar, X, Activity, User, Tag, Loader2, Cpu, CheckCircle } from 'lucide-react';
 import { fetchAuditLogs, AuditRecord, AuditListFilters, fetchEmployees, Employee } from '../services/auditApi';
@@ -16,6 +17,18 @@ function useDebounce<T>(value: T, delay: number): T {
   }, [value, delay]);
   return debouncedValue;
 }
+function SkeletonRow() {
+  return (
+    <tr className="border-b border-zinc-800/30">
+      <td className="p-4"><div className="w-24 h-4 bg-zinc-800/50 rounded animate-pulse" /></td>
+      <td className="p-4"><div className="w-20 h-4 bg-zinc-800/50 rounded animate-pulse" /></td>
+      <td className="p-4"><div className="w-32 h-4 bg-zinc-800/50 rounded animate-pulse" /></td>
+      <td className="p-4"><div className="w-16 h-5 bg-zinc-800/50 rounded-md animate-pulse" /></td>
+      <td className="p-4 flex justify-end"><div className="w-20 h-4 bg-zinc-800/50 rounded animate-pulse" /></td>
+      <td className="p-4"><div className="w-16 h-5 bg-zinc-800/50 rounded-md animate-pulse" /></td>
+    </tr>
+  );
+}
 
 export default function TransactionHistory() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -27,8 +40,12 @@ export default function TransactionHistory() {
   const [employeesList, setEmployeesList] = useState<Employee[]>([]);
 
   useEffect(() => {
-    fetchEmployees().then(res => setEmployeesList(res.data || []));
-  }, []);
+  const loadEmployees = async () => {
+    const res = await fetchEmployees();
+    setEmployeesList(res.data || []);
+  };
+  void loadEmployees();
+}, []);
 
   // API State
   const [transactions, setTransactions] = useState<AuditRecord[]>([]);
@@ -77,14 +94,14 @@ export default function TransactionHistory() {
   }, [page, debouncedSearchTerm, debouncedDateRange, selectedEmployees, selectedAssets, selectedStatuses]);
 
   useEffect(() => {
-    loadData(false);
-  }, [debouncedSearchTerm, debouncedDateRange, selectedEmployees, selectedAssets, selectedStatuses, loadData]);
+  void loadData(false);
+}, [debouncedSearchTerm, debouncedDateRange, selectedEmployees, selectedAssets, selectedStatuses, loadData]);
 
   const handleLoadMore = () => {
-    if (!isLoading && hasMore) {
-      loadData(true);
-    }
-  };
+  if (!isLoading && hasMore) {
+    void loadData(true);
+  }
+};
 
   // Active filters array for tags
   const activeFilters = useMemo(() => {
@@ -167,17 +184,7 @@ export default function TransactionHistory() {
     setPage(1);
   };
 
-  // Skeletons
-  const SkeletonRow = () => (
-    <tr className="border-b border-zinc-800/30">
-      <td className="p-4"><div className="w-24 h-4 bg-zinc-800/50 rounded animate-pulse" /></td>
-      <td className="p-4"><div className="w-20 h-4 bg-zinc-800/50 rounded animate-pulse" /></td>
-      <td className="p-4"><div className="w-32 h-4 bg-zinc-800/50 rounded animate-pulse" /></td>
-      <td className="p-4"><div className="w-16 h-5 bg-zinc-800/50 rounded-md animate-pulse" /></td>
-      <td className="p-4 flex justify-end"><div className="w-20 h-4 bg-zinc-800/50 rounded animate-pulse" /></td>
-      <td className="p-4"><div className="w-16 h-5 bg-zinc-800/50 rounded-md animate-pulse" /></td>
-    </tr>
-  );
+
 
   return (
     <div className="flex-1 flex flex-col p-6 lg:p-12 max-w-7xl mx-auto w-full">
