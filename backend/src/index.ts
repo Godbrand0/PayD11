@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import passport from './config/passport.js';
 import authRoutes from './routes/authRoutes.js';
 import { scheduleExecutor } from './services/scheduleExecutor.js';
+import { contractEventIndexer } from './services/contractEventIndexer.js';
 
 dotenv.config();
 
@@ -29,6 +30,10 @@ const server = app.listen(PORT, () => {
   // Initialize ScheduleExecutor after server starts
   scheduleExecutor.initialize();
   console.log('ScheduleExecutor initialized');
+  
+  // Initialize ContractEventIndexer
+  contractEventIndexer.initialize();
+  console.log('ContractEventIndexer initialized');
 });
 
 // Graceful shutdown handling
@@ -37,6 +42,9 @@ const shutdown = () => {
   
   // Stop the schedule executor
   scheduleExecutor.stop();
+  
+  // Stop the contract event indexer
+  contractEventIndexer.stop();
   
   // Close the server
   server.close(() => {
