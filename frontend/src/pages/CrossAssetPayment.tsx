@@ -3,7 +3,13 @@ import { pathfindingService, PathRecord } from '../services/pathfinding';
 import { Loader2, ArrowRightLeft, ShieldCheck, Info, CheckCircle2, Wallet } from 'lucide-react';
 import { useNotification } from '../hooks/useNotification';
 import { useWallet } from '../hooks/useWallet';
-import { TransactionBuilder, Networks, Contract, nativeToScVal, Account } from '@stellar/stellar-sdk';
+import {
+  TransactionBuilder,
+  Networks,
+  Contract,
+  nativeToScVal,
+  Account,
+} from '@stellar/stellar-sdk';
 
 export default function CrossAssetPayment() {
   const { notifySuccess, notifyError } = useNotification();
@@ -19,7 +25,9 @@ export default function CrossAssetPayment() {
   console.debug('Found paths:', paths);
   const [selectedPath, setSelectedPath] = useState<PathRecord | null>(null);
 
-  const [status, setStatus] = useState<'idle' | 'initiating' | 'pending' | 'completed' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'initiating' | 'pending' | 'completed' | 'error'>(
+    'idle'
+  );
   const [txId, setTxId] = useState<string | null>(null);
 
   // Debounced pathfinding fetch
@@ -33,10 +41,20 @@ export default function CrossAssetPayment() {
       setIsLoading(true);
       try {
         // We assume testnet issuers for this demo
-        const sourceAssetInput = assetIn === 'USDC' ? 'USDC:GBBD47IF6LWK7P7MDEVSCWTTCJM4TI9JMKIGYJAYZ6UUKUXXVXYHYRXP' : assetIn;
-        const destAssetInput = assetOut === 'USDC' ? 'USDC:GBBD47IF6LWK7P7MDEVSCWTTCJM4TI9JMKIGYJAYZ6UUKUXXVXYHYRXP' : assetOut;
+        const sourceAssetInput =
+          assetIn === 'USDC'
+            ? 'USDC:GBBD47IF6LWK7P7MDEVSCWTTCJM4TI9JMKIGYJAYZ6UUKUXXVXYHYRXP'
+            : assetIn;
+        const destAssetInput =
+          assetOut === 'USDC'
+            ? 'USDC:GBBD47IF6LWK7P7MDEVSCWTTCJM4TI9JMKIGYJAYZ6UUKUXXVXYHYRXP'
+            : assetOut;
 
-        const results = await pathfindingService.fetchCrossAssetPaths(sourceAssetInput, amount, destAssetInput);
+        const results = await pathfindingService.fetchCrossAssetPaths(
+          sourceAssetInput,
+          amount,
+          destAssetInput
+        );
         setPaths(results);
         setSelectedPath(results.length > 0 ? results[0] : null);
       } catch (error) {
@@ -62,7 +80,10 @@ export default function CrossAssetPayment() {
 
     setStatus('initiating');
     try {
-      const contractId = import.meta.env.VITE_CROSS_ASSET_PAYMENT_CONTRACT_ID || 'CBRZZW3D52HFW57TDFVRYC6NYL33N23S4VDKF27I46445G3UKWJMFPBM';
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const envContractId = import.meta.env.VITE_CROSS_ASSET_PAYMENT_CONTRACT_ID;
+      const contractId =
+        (envContractId as string) || 'CBRZZW3D52HFW57TDFVRYC6NYL33N23S4VDKF27I46445G3UKWJMFPBM';
       const contract = new Contract(contractId);
 
       // We create a mock Soroban invocation for the swap function
@@ -87,7 +108,10 @@ export default function CrossAssetPayment() {
 
       const xdrString = transaction.toXDR();
 
-      notifySuccess('Please Sign', 'Prompting your wallet to sign the Cross-Asset implementation...');
+      notifySuccess(
+        'Please Sign',
+        'Prompting your wallet to sign the Cross-Asset implementation...'
+      );
 
       // Wallet Signature Call
       await signTransaction(xdrString);
@@ -101,13 +125,14 @@ export default function CrossAssetPayment() {
         setStatus('completed');
         notifySuccess('Payment completed!', `${amount} ${assetIn} cross-asset payment succeeded.`);
       }, 3000);
-
     } catch (error) {
       console.error(error);
       setStatus('error');
       notifyError(
         'Payment failed',
-        error instanceof Error ? error.message : 'An unexpected error occurred during contract invocation.'
+        error instanceof Error
+          ? error.message
+          : 'An unexpected error occurred during contract invocation.'
       );
     }
   };
@@ -199,7 +224,9 @@ export default function CrossAssetPayment() {
                 onClick={() => {
                   void handleInitiate();
                 }}
-                disabled={status === 'initiating' || status === 'pending' || (!!address && !selectedPath)}
+                disabled={
+                  status === 'initiating' || status === 'pending' || (!!address && !selectedPath)
+                }
                 className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 py-4 rounded-xl font-bold text-lg hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {status === 'initiating' ? (
@@ -233,9 +260,7 @@ export default function CrossAssetPayment() {
                   </div>
                   <div className="flex justify-between text-zinc-400">
                     <span>Path Hops</span>
-                    <span className="text-white font-mono">
-                      {selectedPath.path.length} hops
-                    </span>
+                    <span className="text-white font-mono">{selectedPath.path.length} hops</span>
                   </div>
                   <div className="pt-4 border-t border-zinc-800 flex justify-between">
                     <span className="text-zinc-400 font-bold">Guaranteed Destination</span>
@@ -314,7 +339,8 @@ export default function CrossAssetPayment() {
               <div className="bg-blue-900/10 border border-blue-900/30 rounded-2xl p-6 flex gap-4">
                 <Info className="text-blue-400 shrink-0" />
                 <p className="text-sm text-blue-300">
-                  Enter an amount and receiver to query the network for the best cross-asset liquidity paths automatically.
+                  Enter an amount and receiver to query the network for the best cross-asset
+                  liquidity paths automatically.
                 </p>
               </div>
             )}
