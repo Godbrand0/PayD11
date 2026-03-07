@@ -14,3 +14,9 @@ export {
   testConnection,
   type ConnectionTestResult,
 } from "./connectionTest";
+
+export {
+  HorizonService,
+  horizonService,
+  type HealthCheckResult,
+} from "./horizonService";
