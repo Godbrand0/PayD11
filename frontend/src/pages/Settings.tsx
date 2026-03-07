@@ -162,7 +162,7 @@ export default function Settings() {
                 Cancel
               </button>
               <button
-                onClick={handleSave}
+                onClick={() => void handleSave()}
                 className="px-6 py-2.5 rounded-xl font-bold bg-accent hover:bg-accent/80 text-black transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]"
                 disabled={isSaving}
               >
