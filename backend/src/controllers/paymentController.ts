@@ -1,6 +1,7 @@
-import { Request, Response } from 'express';
-import { AnchorService } from '../services/anchorService';
-import { Keypair } from '@stellar/stellar-sdk';
+import type { Request, Response } from 'express';
+import { AnchorService } from '../services/anchorService.js';
+import { Keypair, Asset } from '@stellar/stellar-sdk';
+import { StellarService } from '../services/stellarService.js';
 
 export class PaymentController {
   /**
@@ -32,10 +33,10 @@ export class PaymentController {
       const clientKeypair = Keypair.fromSecret(secretKey);
 
       // 1. Authenticate
-      const token = await AnchorService.authenticate(domain, clientKeypair);
+      const token = await AnchorService.authenticate(domain as string, clientKeypair);
 
       // 2. Initiate Payment
-      const result = await AnchorService.initiatePayment(domain, token, paymentData);
+      const result = await AnchorService.initiatePayment(domain as string, token, paymentData);
 
       res.json(result);
     } catch (error: any) {
@@ -59,12 +60,66 @@ export class PaymentController {
       const clientKeypair = Keypair.fromSecret(secretKey as string);
       // Re-auth to get a fresh token or use a session-based approach
       // For simplicity in this implementation, we re-auth
-      const token = await AnchorService.authenticate(domain, clientKeypair);
+      const token = await AnchorService.authenticate(domain as string, clientKeypair);
 
-      const status = await AnchorService.getTransaction(domain, token, id);
+      const status = await AnchorService.getTransaction(domain as string, token, id);
       res.json(status);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
+    }
+  }
+
+  /**
+   * GET /api/payments/paths
+   * Proxy to Stellar Horizon strictSendPaths
+   */
+  static async getCrossAssetPaths(req: Request, res: Response) {
+    const { sourceAsset, sourceAmount, destAssets } = req.query;
+
+    if (
+      typeof sourceAsset !== 'string' ||
+      typeof sourceAmount !== 'string' ||
+      typeof destAssets !== 'string'
+    ) {
+      return res.status(400).json({
+        error: 'Missing or invalid query params: sourceAsset, sourceAmount, destAssets must be strings'
+      });
+    }
+
+    try {
+      const server = StellarService.getServer();
+
+      // Parse Source Asset
+      let sourceAssetObj: Asset;
+      if (sourceAsset === 'XLM') {
+        sourceAssetObj = Asset.native();
+      } else {
+        // Format parsing: CODE:ISSUER
+        const parts = sourceAsset.split(':');
+        if (parts.length !== 2) throw new Error('Invalid sourceAsset format. Use CODE:ISSUER or XLM');
+        sourceAssetObj = new Asset(parts[0] as string, parts[1] as string);
+      }
+
+      // Parse Destination Assets
+      const destAssetList: Asset[] = destAssets.split(',').map((assetStr) => {
+        if (assetStr === 'XLM') return Asset.native();
+        const parts = assetStr.split(':');
+        if (parts.length !== 2) throw new Error(`Invalid destAsset format: ${assetStr}`);
+        return new Asset(parts[0] as string, parts[1] as string);
+      });
+
+      // Call Horizon
+      const pathsResponse = await server
+        .strictSendPaths(sourceAssetObj, sourceAmount, destAssetList)
+        .call();
+
+      res.json({
+        paths: pathsResponse.records
+      });
+
+    } catch (error: any) {
+      console.error('Pathfinding Error:', error);
+      res.status(500).json({ error: error.message || 'Error fetching conversion paths' });
     }
   }
 }
