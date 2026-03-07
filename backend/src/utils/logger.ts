@@ -1,3 +1,5 @@
+import * as Sentry from '@sentry/node';
+
 enum LogLevel {
   DEBUG = 0,
   INFO = 1,
@@ -55,6 +57,15 @@ export class Logger {
     if (this.level <= LogLevel.ERROR) {
       const errorData = error instanceof Error ? error.message : error;
       console.error(this.formatMessage('ERROR', message, errorData));
+
+      // Capture Sentry Exceptions
+      if (error instanceof Error) {
+        Sentry.captureException(error, { extra: { contextMessage: message } });
+      } else if (error) {
+        Sentry.captureMessage(`${message}: ${typeof error === 'object' ? JSON.stringify(error) : error}`, 'error');
+      } else {
+        Sentry.captureMessage(message, 'error');
+      }
     }
   }
 }

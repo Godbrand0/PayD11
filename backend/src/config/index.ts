@@ -43,6 +43,11 @@ export const config = {
   logging: {
     level: process.env.LOG_LEVEL || 'info',
   },
+
+  // Sentry
+  sentry: {
+    dsn: process.env.SENTRY_DSN,
+  },
 };
 
 export default config;
