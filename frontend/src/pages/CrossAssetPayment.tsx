@@ -13,7 +13,7 @@ import {
 
 export default function CrossAssetPayment() {
   const { notifySuccess, notifyError } = useNotification();
-  const { address, connect, signTransaction } = useWallet();
+  const { address, signTransaction, requireWallet } = useWallet();
   const [assetIn, setAssetIn] = useState('USDC');
   const [assetOut, setAssetOut] = useState('XLM');
   const [amount, setAmount] = useState('');
@@ -73,11 +73,6 @@ export default function CrossAssetPayment() {
   }, [amount, assetIn, assetOut, notifyError]);
 
   const handleInitiate = async () => {
-    if (!address) {
-      await connect();
-      return;
-    }
-
     setStatus('initiating');
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -87,16 +82,15 @@ export default function CrossAssetPayment() {
       const contract = new Contract(contractId);
 
       // We create a mock Soroban invocation for the swap function
-      // Real implementation requires precise arguments matching the Rust contract
       const invokeOp = contract.call(
         'swap',
-        nativeToScVal(address, { type: 'address' }),
+        nativeToScVal(address!, { type: 'address' }),
         nativeToScVal(receiver, { type: 'address' }),
         nativeToScVal(Math.floor(Number(amount) * 1e7), { type: 'i128' }) // Mapped Amount
       );
 
       // Dummy account since we just want to build a payload to sign in this mock demo
-      const account = new Account(address, '0');
+      const account = new Account(address!, '0');
 
       const transaction = new TransactionBuilder(account, {
         fee: '10000',
@@ -113,8 +107,8 @@ export default function CrossAssetPayment() {
         'Prompting your wallet to sign the Cross-Asset implementation...'
       );
 
-      // Wallet Signature Call
-      await signTransaction(xdrString);
+      // Wallet Signature Call with Guard
+      await requireWallet(() => signTransaction(xdrString));
       setTxId('simulated_tx_hash_' + Date.now());
 
       setStatus('pending');

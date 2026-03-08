@@ -3,6 +3,7 @@ import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import ConnectAccount from '../components/ConnectAccount';
 import AppNav from './AppNav';
 import ThemeToggle from './ThemeToggle';
+import { WalletExtensionBanner } from './WalletExtensionBanner';
 
 // ── Page Wrapper ───────────────────────
 const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -48,6 +49,7 @@ const AppLayout: React.FC = () => {
           </div>
         </div>
       </header>
+      <WalletExtensionBanner />
 
       {/* Main */}
       <main className="flex flex-col flex-1 pt-(--header-h)">

@@ -10,7 +10,7 @@ import { useWallet } from './useWallet';
  *   const signedXdr = await sign(transactionXdr);
  */
 export function useWalletSigning() {
-  const { signTransaction, address } = useWallet();
+  const { signTransaction, address, requireWallet } = useWallet();
   const [isSigning, setIsSigning] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,7 +18,7 @@ export function useWalletSigning() {
     setIsSigning(true);
     setError(null);
     try {
-      const signedXdr = await signTransaction(xdr);
+      const signedXdr = await requireWallet(() => signTransaction(xdr));
       return signedXdr;
     } catch (e) {
       const message = e instanceof Error ? e.message : 'Signing failed';
