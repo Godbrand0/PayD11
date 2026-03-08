@@ -138,10 +138,13 @@ export const EmployeeList: React.FC<EmployeeListProps> = ({
 
   return (
     <div className="w-full card glass noise overflow-hidden p-0">
-      <div className="flex justify-between items-center p-6">
-        <span className="font-bold text-lg">Employees</span>
+      <div className="flex justify-between items-center p-4 md:p-6">
+        <span className="font-bold text-lg md:text-xl">Employees</span>
       </div>
-      <table className="w-full text-left border-collapse">
+      
+      {/* Desktop Table View */}
+      <div className="hidden md:block overflow-x-auto">
+        <table className="w-full text-left border-collapse">
         <thead>
           <tr className="border-b border-hi">
             <th
@@ -258,12 +261,106 @@ export const EmployeeList: React.FC<EmployeeListProps> = ({
           )}
         </tbody>
       </table>
+      </div>
+      
+      {/* Mobile Card View */}
+      <div className="md:hidden px-4 pb-4">
+        {sortedEmployees.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            No employees found
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {sortedEmployees.map((employee) => (
+              <div key={employee.id} className="bg-white/5 rounded-lg p-4 border border-white/10">
+                {/* Employee Header */}
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <Avatar
+                      email={employee.email}
+                      name={employee.name}
+                      imageUrl={employee.imageUrl}
+                      size="sm"
+                    />
+                    <div>
+                      <h3 className="font-semibold text-sm">{employee.name}</h3>
+                      <p className="text-xs text-muted">{employee.position}</p>
+                    </div>
+                  </div>
+                  <span
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
+                      employee.status === 'Active'
+                        ? 'bg-green-100 text-green-600 border-green-200'
+                        : 'bg-red-100 text-red-600 border-red-200'
+                    }`}
+                  >
+                    <div
+                      className={`w-1 h-1 rounded-full ${
+                        employee.status === 'Active' ? 'bg-green-600' : 'bg-red-600'
+                      }`}
+                    />
+                    {employee.status || '-'}
+                  </span>
+                </div>
+                
+                {/* Employee Details */}
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted">Wallet:</span>
+                    <span className="font-mono text-xs">{shortenWallet(employee.wallet || '')}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted">Salary:</span>
+                    {onEditEmployee ? (
+                      <button
+                        className="text-blue-500 underline text-sm"
+                        onClick={() => {
+                          setEditSalary(employee.salary || 0);
+                          setShowEditModal({ open: true, employee });
+                        }}
+                      >
+                        {employee.salary ?? 0}
+                      </button>
+                    ) : (
+                      <span>{employee.salary ?? 0}</span>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Action Buttons */}
+                <div className="flex gap-2 mt-4 pt-3 border-t border-white/10">
+                  <button
+                    className="flex-1 flex items-center justify-center gap-2 py-2 px-3 bg-blue-500/10 text-blue-500 rounded-lg hover:bg-blue-500/20 transition touch-manipulation"
+                    style={{ minHeight: '44px' }}
+                    onClick={() => {
+                      setEditSalary(employee.salary || 0);
+                      setShowEditModal({ open: true, employee });
+                    }}
+                  >
+                    <Pencil className="w-4 h-4" />
+                    Edit
+                  </button>
+                  <button
+                    className="flex-1 flex items-center justify-center gap-2 py-2 px-3 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500/20 transition touch-manipulation"
+                    style={{ minHeight: '44px' }}
+                    onClick={() => setShowDeleteConfirm({ open: true, id: employee.id })}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Remove
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
       {/* CSV Import */}
-      <div className="p-6 w-full flex flex-col items-center justify-center text-center bg-black/10">
+      <div className="p-4 md:p-6 w-full flex flex-col items-center justify-center text-center bg-black/10">
         <p className="text-muted mb-4 font-medium">Need to migrate your legacy payroll system?</p>
         {!showCSVUploader && (
           <button
-            className="text-accent font-bold text-sm hover:underline"
+            className="text-accent font-bold text-sm hover:underline touch-manipulation py-2 px-4"
+            style={{ minHeight: '44px' }}
             onClick={() => setShowCSVUploader(true)}
           >
             Import from CSV
@@ -278,7 +375,8 @@ export const EmployeeList: React.FC<EmployeeListProps> = ({
             <div className="flex gap-2 justify-center mt-4">
               <button
                 onClick={handleAddEmployees}
-                className="px-4 py-2 bg-blue-500 text-white rounded"
+                className="px-4 py-2 bg-blue-500 text-white rounded touch-manipulation"
+                style={{ minHeight: '44px' }}
                 disabled={csvData.length === 0}
               >
                 Add Employees from CSV
@@ -288,7 +386,8 @@ export const EmployeeList: React.FC<EmployeeListProps> = ({
                   setShowCSVUploader(false);
                   setCsvData([]);
                 }}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded"
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded touch-manipulation"
+                style={{ minHeight: '44px' }}
               >
                 Cancel
               </button>
@@ -299,8 +398,8 @@ export const EmployeeList: React.FC<EmployeeListProps> = ({
 
       {/* Add Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
             <h2 className="text-lg font-bold mb-4">Add Employee</h2>
             <input
               type="text"
@@ -350,13 +449,15 @@ export const EmployeeList: React.FC<EmployeeListProps> = ({
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setShowAddModal(false)}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded"
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded touch-manipulation"
+                style={{ minHeight: '44px' }}
               >
                 Cancel
               </button>
               <button
                 onClick={handleAddModalSubmit}
-                className="px-4 py-2 bg-blue-500 text-white rounded"
+                className="px-4 py-2 bg-blue-500 text-white rounded touch-manipulation"
+                style={{ minHeight: '44px' }}
               >
                 Add
               </button>
@@ -366,8 +467,8 @@ export const EmployeeList: React.FC<EmployeeListProps> = ({
       )}
       {/* Edit Modal */}
       {showEditModal.open && showEditModal.employee && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
             <h2 className="text-lg font-bold mb-4">Edit Salary</h2>
             <div className="mb-4">
               <span className="font-semibold">{showEditModal.employee.name}</span>
@@ -382,13 +483,15 @@ export const EmployeeList: React.FC<EmployeeListProps> = ({
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setShowEditModal({ open: false })}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded"
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded touch-manipulation"
+                style={{ minHeight: '44px' }}
               >
                 Cancel
               </button>
               <button
                 onClick={handleEditModalSubmit}
-                className="px-4 py-2 bg-blue-500 text-white rounded"
+                className="px-4 py-2 bg-blue-500 text-white rounded touch-manipulation"
+                style={{ minHeight: '44px' }}
               >
                 Save
               </button>
@@ -398,20 +501,22 @@ export const EmployeeList: React.FC<EmployeeListProps> = ({
       )}
       {/* Delete Confirm */}
       {showDeleteConfirm.open && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
             <h2 className="text-lg font-bold mb-4">Confirm Removal</h2>
             <p className="mb-4">Are you sure you want to remove this employee?</p>
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setShowDeleteConfirm({ open: false })}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded"
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded touch-manipulation"
+                style={{ minHeight: '44px' }}
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeleteConfirm}
-                className="px-4 py-2 bg-red-500 text-white rounded"
+                className="px-4 py-2 bg-red-500 text-white rounded touch-manipulation"
+                style={{ minHeight: '44px' }}
               >
                 Remove
               </button>

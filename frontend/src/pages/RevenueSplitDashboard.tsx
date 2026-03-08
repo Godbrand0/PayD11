@@ -189,13 +189,13 @@ export default function RevenueSplitDashboard() {
   };
 
   return (
-    <div className="flex-1 flex flex-col p-6 lg:p-12 max-w-7xl mx-auto w-full">
-      <div className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-zinc-800 pb-6">
+    <div className="flex-1 flex flex-col p-4 md:p-6 lg:p-12 max-w-7xl mx-auto w-full">
+      <div className="mb-6 md:mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-zinc-800 pb-4 md:pb-6">
         <div>
-          <h1 className="text-4xl font-black tracking-tight">
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight">
             Revenue Split <span className="text-accent">Dashboard</span>
           </h1>
-          <p className="text-zinc-500 font-mono text-sm tracking-wider uppercase mt-2">
+          <p className="text-zinc-500 font-mono text-xs md:text-sm tracking-wider uppercase mt-2">
             Contract-backed allocations and distribution history
           </p>
         </div>
@@ -205,7 +205,8 @@ export default function RevenueSplitDashboard() {
             onClick={() => {
               void connect();
             }}
-            className="px-4 py-2 rounded-lg font-bold bg-accent text-black"
+            className="px-4 py-2 rounded-lg font-bold bg-accent text-black touch-manipulation"
+            style={{ minHeight: '44px' }}
           >
             Connect Wallet
           </button>
@@ -221,15 +222,15 @@ export default function RevenueSplitDashboard() {
       ) : null}
       {error ? <p className="text-sm text-red-400 mb-6">{error}</p> : null}
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <section className="card glass noise xl:col-span-1">
-          <h2 className="text-lg font-bold mb-4">Current Allocation Splits</h2>
-          <div className="flex items-center gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+        <section className="card glass noise lg:col-span-1">
+          <h2 className="text-base md:text-lg font-bold mb-4">Current Allocation Splits</h2>
+          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
             <div
-              className="w-44 h-44 rounded-full border border-zinc-700"
+              className="w-32 h-32 md:w-44 md:h-44 rounded-full border border-zinc-700 flex-shrink-0"
               style={{ background: buildConicGradient(allocations) }}
             />
-            <div className="space-y-2">
+            <div className="space-y-2 w-full md:w-auto">
               {allocations.length === 0 ? (
                 <p className="text-sm text-zinc-400">No allocation data loaded.</p>
               ) : (
@@ -250,13 +251,14 @@ export default function RevenueSplitDashboard() {
           </div>
         </section>
 
-        <section className="card glass noise xl:col-span-2">
+        <section className="card glass noise lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold">Edit Allocations</h2>
             <button
               type="button"
               onClick={addRecipient}
-              className="px-3 py-1.5 rounded-md bg-zinc-800 hover:bg-zinc-700 text-xs font-semibold"
+              className="px-3 py-1.5 rounded-md bg-zinc-800 hover:bg-zinc-700 text-xs font-semibold touch-manipulation"
+              style={{ minHeight: '44px' }}
             >
               Add Recipient
             </button>
@@ -275,6 +277,7 @@ export default function RevenueSplitDashboard() {
                   onChange={(event) => setAllocationField(idx, 'recipient', event.target.value)}
                   placeholder="Recipient Stellar Address"
                   className="md:col-span-8 bg-[#0a0a0c] border border-zinc-800 rounded-lg px-3 py-2 text-xs"
+                  style={{ minHeight: '44px' }}
                 />
                 <input
                   type="number"
@@ -285,11 +288,13 @@ export default function RevenueSplitDashboard() {
                   step={0.01}
                   placeholder="%"
                   className="md:col-span-3 bg-[#0a0a0c] border border-zinc-800 rounded-lg px-3 py-2 text-xs"
+                  style={{ minHeight: '44px' }}
                 />
                 <button
                   type="button"
                   onClick={() => removeRecipient(idx)}
-                  className="md:col-span-1 text-red-400 text-xs font-semibold"
+                  className="md:col-span-1 text-red-400 text-xs font-semibold touch-manipulation p-2"
+                  style={{ minHeight: '44px' }}
                 >
                   Remove
                 </button>
@@ -305,7 +310,8 @@ export default function RevenueSplitDashboard() {
                 void handleSaveAllocations();
               }}
               disabled={isSaving}
-              className="px-4 py-2 rounded-lg bg-accent text-black font-bold disabled:opacity-70"
+              className="px-4 py-2 rounded-lg bg-accent text-black font-bold disabled:opacity-70 touch-manipulation"
+              style={{ minHeight: '44px' }}
             >
               {isSaving ? 'Submitting...' : 'Submit On-Chain Update'}
             </button>
@@ -313,9 +319,9 @@ export default function RevenueSplitDashboard() {
         </section>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mt-6">
-        <section className="card glass noise xl:col-span-1">
-          <h2 className="text-lg font-bold mb-4">Live Recipient Balances</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 mt-6">
+        <section className="card glass noise lg:col-span-1">
+          <h2 className="text-base md:text-lg font-bold mb-4">Live Recipient Balances</h2>
           {recipientBalances.length === 0 ? (
             <p className="text-sm text-zinc-400">No recipient distributions available yet.</p>
           ) : (
@@ -325,7 +331,7 @@ export default function RevenueSplitDashboard() {
                   key={row.recipient}
                   className="flex items-center justify-between border-b border-zinc-800 pb-2"
                 >
-                  <span className="text-xs text-zinc-300 truncate max-w-[180px]">
+                  <span className="text-xs text-zinc-300 truncate max-w-[120px] md:max-w-[180px]">
                     {row.recipient}
                   </span>
                   <span className="text-xs font-bold text-white">
@@ -341,52 +347,95 @@ export default function RevenueSplitDashboard() {
           </p>
         </section>
 
-        <section className="card glass noise xl:col-span-2">
-          <h2 className="text-lg font-bold mb-4">Historical Distribution Events</h2>
+        <section className="card glass noise lg:col-span-2">
+          <h2 className="text-base md:text-lg font-bold mb-4">Historical Distribution Events</h2>
           {events.length === 0 ? (
             <p className="text-sm text-zinc-400">No backend indexed distribution events found.</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="text-left text-zinc-500 border-b border-zinc-800">
-                  <tr>
-                    <th className="py-2 pr-4">Date</th>
-                    <th className="py-2 pr-4">Recipient</th>
-                    <th className="py-2 pr-4">Action</th>
-                    <th className="py-2 pr-4">Amount</th>
-                    <th className="py-2 pr-4">Tx</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {events.map((event) => (
-                    <tr key={event.id} className="border-b border-zinc-800/50">
-                      <td className="py-2 pr-4 text-xs">
-                        {new Date(event.createdAt).toLocaleString()}
-                      </td>
-                      <td className="py-2 pr-4 text-xs">{event.recipientLabel}</td>
-                      <td className="py-2 pr-4 text-xs">{event.action}</td>
-                      <td className="py-2 pr-4 text-xs">
-                        {formatAmount(event.amount, event.assetCode || preferredStablecoin)}
-                      </td>
-                      <td className="py-2 pr-4 text-xs">
-                        {event.txHash ? (
+            <>
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="text-left text-zinc-500 border-b border-zinc-800">
+                    <tr>
+                      <th className="py-2 pr-4">Date</th>
+                      <th className="py-2 pr-4">Recipient</th>
+                      <th className="py-2 pr-4">Action</th>
+                      <th className="py-2 pr-4">Amount</th>
+                      <th className="py-2 pr-4">Tx</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {events.map((event) => (
+                      <tr key={event.id} className="border-b border-zinc-800/50">
+                        <td className="py-2 pr-4 text-xs">
+                          {new Date(event.createdAt).toLocaleString()}
+                        </td>
+                        <td className="py-2 pr-4 text-xs">{event.recipientLabel}</td>
+                        <td className="py-2 pr-4 text-xs">{event.action}</td>
+                        <td className="py-2 pr-4 text-xs">
+                          {formatAmount(event.amount, event.assetCode || preferredStablecoin)}
+                        </td>
+                        <td className="py-2 pr-4 text-xs">
+                          {event.txHash ? (
+                            <a
+                              href={`https://stellar.expert/explorer/testnet/tx/${event.txHash}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-accent"
+                            >
+                              {event.txHash.slice(0, 10)}...
+                            </a>
+                          ) : (
+                            <span className="text-zinc-500">N/A</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              
+              {/* Mobile Card View */}
+              <div className="md:hidden space-y-3">
+                {events.map((event) => (
+                  <div key={event.id} className="bg-white/5 rounded-lg p-3 border border-white/10">
+                    <div className="flex justify-between items-start mb-2">
+                      <span className="text-xs text-zinc-400">
+                        {new Date(event.createdAt).toLocaleDateString()}
+                      </span>
+                      <span className="text-xs font-semibold text-white px-2 py-1 bg-zinc-800 rounded">
+                        {event.action}
+                      </span>
+                    </div>
+                    <div className="space-y-1 text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-zinc-400">Recipient:</span>
+                        <span className="text-zinc-300 truncate max-w-[150px]">{event.recipientLabel}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-zinc-400">Amount:</span>
+                        <span className="text-white font-semibold">
+                          {formatAmount(event.amount, event.assetCode || preferredStablecoin)}
+                        </span>
+                      </div>
+                      {event.txHash && (
+                        <div className="pt-1">
                           <a
                             href={`https://stellar.expert/explorer/testnet/tx/${event.txHash}`}
                             target="_blank"
                             rel="noreferrer"
-                            className="text-accent"
+                            className="text-accent text-xs hover:underline"
                           >
-                            {event.txHash.slice(0, 10)}...
+                            View Transaction: {event.txHash.slice(0, 8)}...
                           </a>
-                        ) : (
-                          <span className="text-zinc-500">N/A</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </section>
       </div>

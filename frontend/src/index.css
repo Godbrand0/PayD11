@@ -158,3 +158,68 @@ select {
 .Select__icon {
   pointer-events: none;
 }
+
+/* ── Mobile Responsive Enhancements ── */
+
+/* Touch-friendly tap targets */
+button, a, input, select, textarea {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Exceptions for small inline elements */
+button:not([class*="touch-manipulation"]):not([class*="min-h"]):not([class*="h-"]):not([class*="p-"]):not([class*="px-"]):not([class*="py-"]) {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Small icon buttons and links */
+button[class*="w-4"], button[class*="w-5"], button[class*="w-6"],
+a[class*="w-4"], a[class*="w-5"], a[class*="w-6"] {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Responsive text sizing */
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+/* Mobile viewport fixes */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari viewport fix */
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+}
+
+/* Horizontal scroll for tables on mobile */
+@media (max-width: 768px) {
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Modal responsive fixes */
+@media (max-width: 768px) {
+  .modal-responsive {
+    width: 95vw;
+    max-width: 95vw;
+    margin: 1rem;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
+
+/* Form input mobile improvements */
+@media (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}

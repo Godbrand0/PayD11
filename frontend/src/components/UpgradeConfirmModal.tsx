@@ -400,23 +400,24 @@ export default function UpgradeConfirmModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
       onClick={handleBackdropClick}
     >
       <div
-        className="relative w-full max-w-2xl mx-4 bg-surface border border-hi rounded-2xl shadow-2xl overflow-hidden"
+        className="relative w-full max-w-2xl bg-surface border border-hi rounded-2xl shadow-2xl overflow-hidden max-h-[95vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal header */}
-        <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-hi">
-          <div>
-            <h2 className="text-lg font-black tracking-tight">Upgrade Contract</h2>
-            <p className="text-xs text-muted font-mono mt-0.5">{contract.name}</p>
+        <div className="flex items-center justify-between px-4 md:px-6 pt-4 md:pt-6 pb-3 md:pb-4 border-b border-hi flex-shrink-0">
+          <div className="min-w-0 flex-1">
+            <h2 className="text-base md:text-lg font-black tracking-tight truncate">Upgrade Contract</h2>
+            <p className="text-xs text-muted font-mono mt-0.5 truncate">{contract.name}</p>
           </div>
           {!['executing', 'simulating'].includes(modal.step) && (
             <button
               onClick={() => void handleCancel()}
-              className="p-1.5 rounded-lg hover:bg-white/5 text-muted hover:text-text transition-colors"
+              className="p-2 md:p-1.5 rounded-lg hover:bg-white/5 text-muted hover:text-text transition-colors touch-manipulation"
+              style={{ minHeight: '44px', minWidth: '44px' }}
               aria-label="Close"
             >
               <X className="w-5 h-5" />
@@ -425,12 +426,12 @@ export default function UpgradeConfirmModal({
         </div>
 
         {/* Step breadcrumb */}
-        <div className="px-6 pt-4">
+        <div className="px-4 md:px-6 pt-3 md:pt-4 flex-shrink-0">
           <StepBreadcrumb current={currentStepIndex()} />
         </div>
 
         {/* Step content */}
-        <div className="px-6 pb-6 max-h-[70vh] overflow-y-auto">
+        <div className="px-4 md:px-6 pb-4 md:pb-6 overflow-y-auto flex-1">
           {/* ── Step 1: INPUT ─────────────────────────────────────────── */}
           {modal.step === 'input' && (
             <div className="flex flex-col gap-5">
@@ -503,7 +504,8 @@ export default function UpgradeConfirmModal({
               <button
                 onClick={() => void handleValidateAndSimulate()}
                 disabled={modal.validating || !modal.wasmHash.trim()}
-                className="flex items-center justify-center gap-2 py-3.5 bg-accent/20 text-accent border border-accent/40 font-black rounded-xl hover:bg-accent hover:text-black transition-all uppercase tracking-widest text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center justify-center gap-2 py-3.5 bg-accent/20 text-accent border border-accent/40 font-black rounded-xl hover:bg-accent hover:text-black transition-all uppercase tracking-widest text-sm disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation w-full"
+                style={{ minHeight: '44px' }}
               >
                 {modal.validating ? (
                   <>
@@ -520,7 +522,7 @@ export default function UpgradeConfirmModal({
 
           {/* ── Step 2: SIMULATING ────────────────────────────────────── */}
           {modal.step === 'simulating' && (
-            <div className="flex flex-col items-center justify-center py-12 gap-5">
+            <div className="flex flex-col items-center justify-center py-8 md:py-12 gap-5">
               <div className="relative">
                 <div className="w-16 h-16 rounded-full border-2 border-accent/20 flex items-center justify-center">
                   <Loader2 className="w-8 h-8 text-accent animate-spin" />
@@ -628,14 +630,16 @@ export default function UpgradeConfirmModal({
               <div className="flex gap-3 mt-2">
                 <button
                   onClick={() => void handleCancel()}
-                  className="flex-1 py-3 border border-hi rounded-xl text-sm font-bold text-muted hover:text-text hover:bg-white/5 transition-all uppercase tracking-widest"
+                  className="flex-1 py-3 border border-hi rounded-xl text-sm font-bold text-muted hover:text-text hover:bg-white/5 transition-all uppercase tracking-widest touch-manipulation"
+                  style={{ minHeight: '44px' }}
                 >
                   Cancel
                 </button>
                 {modal.simulation.success && (
                   <button
                     onClick={handleAcceptReview}
-                    className="flex-1 flex items-center justify-center gap-2 py-3 bg-accent/20 text-accent border border-accent/40 rounded-xl text-sm font-black hover:bg-accent hover:text-black transition-all uppercase tracking-widest"
+                    className="flex-1 flex items-center justify-center gap-2 py-3 bg-accent/20 text-accent border border-accent/40 rounded-xl text-sm font-black hover:bg-accent hover:text-black transition-all uppercase tracking-widest touch-manipulation"
+                    style={{ minHeight: '44px' }}
                   >
                     Proceed <ArrowRight className="w-4 h-4" />
                   </button>
@@ -693,6 +697,7 @@ export default function UpgradeConfirmModal({
                   placeholder="S..."
                   autoComplete="off"
                   spellCheck={false}
+                  style={{ minHeight: '44px' }}
                 />
                 <p className="mt-1.5 text-xs text-muted">
                   Your secret key is used only to sign this transaction and is never stored.
@@ -703,14 +708,16 @@ export default function UpgradeConfirmModal({
               <div className="flex gap-3 mt-2">
                 <button
                   onClick={() => void handleCancel()}
-                  className="flex-1 py-3 border border-hi rounded-xl text-sm font-bold text-muted hover:text-text hover:bg-white/5 transition-all uppercase tracking-widest"
+                  className="flex-1 py-3 border border-hi rounded-xl text-sm font-bold text-muted hover:text-text hover:bg-white/5 transition-all uppercase tracking-widest touch-manipulation"
+                  style={{ minHeight: '44px' }}
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => void handleExecute()}
                   disabled={!modal.adminSecret.trim()}
-                  className="flex-1 py-3 bg-red-500/20 text-red-400 border border-red-500/40 rounded-xl text-sm font-black hover:bg-red-500 hover:text-white transition-all uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 py-3 bg-red-500/20 text-red-400 border border-red-500/40 rounded-xl text-sm font-black hover:bg-red-500 hover:text-white transition-all uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
+                  style={{ minHeight: '44px' }}
                 >
                   Execute Upgrade
                 </button>
@@ -731,7 +738,8 @@ export default function UpgradeConfirmModal({
                     </code>
                     <button
                       onClick={() => copyToClipboard(modal.txHash!)}
-                      className="p-1.5 hover:bg-white/5 rounded text-muted hover:text-text transition-colors shrink-0"
+                      className="p-2 hover:bg-white/5 rounded text-muted hover:text-text transition-colors shrink-0 touch-manipulation"
+                      style={{ minHeight: '44px', minWidth: '44px' }}
                     >
                       <Copy className="w-3.5 h-3.5" />
                     </button>
@@ -799,7 +807,8 @@ export default function UpgradeConfirmModal({
                   <code className="flex-1 font-mono text-xs break-all">{modal.txHash}</code>
                   <button
                     onClick={() => copyToClipboard(modal.txHash)}
-                    className="p-1.5 hover:bg-white/5 rounded text-muted hover:text-text transition-colors shrink-0"
+                    className="p-2 hover:bg-white/5 rounded text-muted hover:text-text transition-colors shrink-0 touch-manipulation"
+                    style={{ minHeight: '44px', minWidth: '44px' }}
                   >
                     <Copy className="w-3.5 h-3.5" />
                   </button>
@@ -807,7 +816,8 @@ export default function UpgradeConfirmModal({
               </div>
               <button
                 onClick={onClose}
-                className="w-full py-3 bg-accent/20 text-accent border border-accent/40 rounded-xl font-black uppercase tracking-widest text-sm hover:bg-accent hover:text-black transition-all"
+                className="w-full py-3 bg-accent/20 text-accent border border-accent/40 rounded-xl font-black uppercase tracking-widest text-sm hover:bg-accent hover:text-black transition-all touch-manipulation"
+                style={{ minHeight: '44px' }}
               >
                 Done
               </button>
@@ -832,7 +842,8 @@ export default function UpgradeConfirmModal({
               <div className="flex gap-3 w-full">
                 <button
                   onClick={onClose}
-                  className="flex-1 py-3 border border-hi rounded-xl text-sm font-bold text-muted hover:text-text hover:bg-white/5 transition-all uppercase tracking-widest"
+                  className="flex-1 py-3 border border-hi rounded-xl text-sm font-bold text-muted hover:text-text hover:bg-white/5 transition-all uppercase tracking-widest touch-manipulation"
+                  style={{ minHeight: '44px' }}
                 >
                   Close
                 </button>
@@ -845,7 +856,8 @@ export default function UpgradeConfirmModal({
                       validationError: null,
                     })
                   }
-                  className="flex-1 flex items-center justify-center gap-2 py-3 bg-black/20 border border-hi rounded-xl text-sm font-bold hover:bg-white/5 transition-all uppercase tracking-widest"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 bg-black/20 border border-hi rounded-xl text-sm font-bold hover:bg-white/5 transition-all uppercase tracking-widest touch-manipulation"
+                  style={{ minHeight: '44px' }}
                 >
                   <RefreshCw className="w-4 h-4" /> Try Again
                 </button>
