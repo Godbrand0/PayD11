@@ -35,7 +35,7 @@ export default function Settings() {
     setIsSaving(true);
     setSaveStatus('idle');
     // Simulate API request
-    await new Promise(resolve => setTimeout(resolve, 800));
+    await new Promise((resolve) => setTimeout(resolve, 800));
     setIsSaving(false);
     setSaveStatus('success');
 
@@ -56,7 +56,9 @@ export default function Settings() {
     <div className="flex-1 flex flex-col items-center justify-start p-12 max-w-3xl mx-auto w-full">
       <div className="w-full mb-12 flex items-end justify-between border-b border-hi pb-8">
         <div>
-          <h1 className="text-4xl font-black mb-2 tracking-tight">{t('settings.title') || "Settings"}</h1>
+          <h1 className="text-4xl font-black mb-2 tracking-tight">
+            {t('settings.title') || 'Settings'}
+          </h1>
         </div>
       </div>
 
@@ -96,7 +98,9 @@ export default function Settings() {
                   >
                     Upload New Image
                   </button>
-                  <p className="text-xs text-muted mt-2">Recommended size: 256x256px. Max file size: 2MB.</p>
+                  <p className="text-xs text-muted mt-2">
+                    Recommended size: 256x256px. Max file size: 2MB.
+                  </p>
                 </div>
               </div>
             </div>
@@ -133,7 +137,9 @@ export default function Settings() {
                 <label className="block text-xs font-bold uppercase tracking-widest text-muted">
                   Preferred Stablecoin
                 </label>
-                <p className="text-xs text-muted mb-1">Default token used for payroll distributions.</p>
+                <p className="text-xs text-muted mb-1">
+                  Default token used for payroll distributions.
+                </p>
                 <select
                   value={stablecoin}
                   onChange={(e) => setStablecoin(e.target.value)}
@@ -169,7 +175,7 @@ export default function Settings() {
                 {isSaving ? (
                   <div className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin"></div>
                 ) : (
-                  "Save Changes"
+                  'Save Changes'
                 )}
               </button>
             </div>
@@ -180,16 +186,19 @@ export default function Settings() {
         <div className="w-full card glass noise p-8">
           <div className="flex flex-col gap-3">
             <label className="block text-xs font-bold uppercase tracking-widest text-muted">
-              {t('settings.languageLabel') || "Language"}
+              {t('settings.languageLabel') || 'Language'}
             </label>
-            <p className="text-sm text-muted">{t('settings.languageDescription') || "Choose your preferred user interface language."}</p>
+            <p className="text-sm text-muted">
+              {t('settings.languageDescription') ||
+                'Choose your preferred user interface language.'}
+            </p>
             <select
               value={i18n.language || 'en'}
               onChange={handleChangeLanguage}
               className="w-full bg-black/20 border border-hi rounded-xl p-4 text-text outline-none focus:border-accent/50 focus:bg-accent/5 transition-all mt-2"
             >
-              <option value="en">{t('settings.languageEnglish') || "English"}</option>
-              <option value="es">{t('settings.languageSpanish') || "Spanish"}</option>
+              <option value="en">{t('settings.languageEnglish') || 'English'}</option>
+              <option value="es">{t('settings.languageSpanish') || 'Spanish'}</option>
             </select>
           </div>
         </div>
