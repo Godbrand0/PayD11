@@ -14,9 +14,12 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [address, setAddress] = useState<string | null>(null);
   const [walletName, setWalletName] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [isExtensionAvailable, setIsExtensionAvailable] = useState(true);
   const kitRef = useRef<StellarWalletsKit | null>(null);
   const { t } = useTranslation();
   const { notify, notifySuccess, notifyError } = useNotification();
+
+  const STORAGE_KEY = 'payd_last_wallet';
 
   useEffect(() => {
     const newKit = new StellarWalletsKit({
@@ -24,6 +27,34 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       modules: [new FreighterModule(), new xBullModule(), new LobstrModule()],
     });
     kitRef.current = newKit;
+
+    // Check if Freighter is available (basic check)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+    if (typeof window !== 'undefined' && !(window as any).freighter) {
+      setIsExtensionAvailable(false);
+    }
+
+    // Silent reconnection
+    const lastWallet = localStorage.getItem(STORAGE_KEY);
+    if (lastWallet) {
+      void (async () => {
+        setIsConnecting(true);
+        try {
+          // In stellar-wallets-kit, you usually need to set the wallet first
+          newKit.setWallet(lastWallet);
+          const { address } = await newKit.getAddress();
+          if (address) {
+            setAddress(address);
+            setWalletName(lastWallet);
+          }
+        } catch (error) {
+          console.warn('Silent reconnection failed:', error);
+          localStorage.removeItem(STORAGE_KEY);
+        } finally {
+          setIsConnecting(false);
+        }
+      })();
+    }
   }, []);
 
   const connect = async () => {
@@ -36,13 +67,18 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         modalTitle: t('wallet.modalTitle'),
         onWalletSelected: (option) => {
           void (async () => {
-            const { address } = await kit.getAddress();
-            setAddress(address);
-            setWalletName(option.id);
-            notifySuccess(
-              'Wallet connected',
-              `${address.slice(0, 6)}...${address.slice(-4)} via ${option.id}`
-            );
+            try {
+              const { address } = await kit.getAddress();
+              setAddress(address);
+              setWalletName(option.id);
+              localStorage.setItem(STORAGE_KEY, option.id);
+              notifySuccess(
+                'Wallet connected',
+                `${address.slice(0, 6)}...${address.slice(-4)} via ${option.id}`
+              );
+            } catch (err) {
+              console.error('onWalletSelected error:', err);
+            }
           })();
         },
         onClosed: () => {
@@ -55,13 +91,32 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         'Wallet connection failed',
         error instanceof Error ? error.message : 'Please try again.'
       );
+      setIsConnecting(false);
     }
   };
 
   const disconnect = () => {
     setAddress(null);
     setWalletName(null);
+    localStorage.removeItem(STORAGE_KEY);
     notify('Wallet disconnected');
+  };
+
+  const requireWallet = async <T,>(callback: () => Promise<T>): Promise<T> => {
+    if (address) {
+      return callback();
+    }
+
+    await connect();
+
+    // Check again after modal interaction
+    if (!address) {
+      // If still no address, it likely means the user closed the modal or failed
+      // For the sake of UX, we should probably throw an error that the caller can catch
+      throw new Error('Wallet connection required to perform this action');
+    }
+
+    return callback();
   };
 
   const signTransaction = async (xdr: string) => {
@@ -77,9 +132,11 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         address,
         walletName,
         isConnecting,
+        isExtensionAvailable,
         connect,
         disconnect,
         signTransaction,
+        requireWallet,
       }}
     >
       {children}
